@@ -12,19 +12,30 @@ h1 {
     height: 400px;
     border: 1px solid orange;
     left: 8px;
-    /*
-    */
 }
 
-#img-frame {
+#logo-black {
     position: absolute;
     width: 1046px;
     height: 400px;
     background: url(images/logo-black.png) 0 0;
     z-index: 0;
-    /*
-    margin: 0 0 0 82px;
-    */
+}
+
+#logo-green {
+    position: absolute;
+    width: 7px;
+    height: 400px;
+    background: url(images/logo-green.png) 0 0;
+    z-index: 1;
+}
+
+#logo-blue {
+    position: absolute;
+    width: 7px;
+    height: 400px;
+    background: url(images/logo-blue.png) 0 0;
+    z-index: 2;
 }
 
 #timer {
@@ -35,4 +46,26 @@ h1 {
     margin-top: -222px;
     /*
     */
+}
+
+#pom-dur {
+    width: 100px;
+    height: 42px;
+    z-index: 3;
+    border: 1px solid blue;
+    margin: 50px 0 50px 0;
+}
+
+#sht-rest-dur {
+    width: 100px;
+    height: 42px;
+    z-index: 3;
+    border: 1px solid green;
+}
+
+#lng-rest-dur {
+    width: 100px;
+    height: 42px;
+    z-index: 3;
+    border: 1px solid yellow;
 }
