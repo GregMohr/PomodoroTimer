@@ -11,8 +11,8 @@ h1 {
     width: 1046px;
     height: 400px;
     border: 1px solid orange;
+    left: 8px;
     /*
-    left: 5.5%;
     */
 }
 
@@ -32,7 +32,7 @@ h1 {
     width: 100px;
     height: 42px;
     z-index: 3;
-    /*
     margin-top: -222px;
+    /*
     */
 }
