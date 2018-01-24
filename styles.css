@@ -24,7 +24,7 @@ h1 {
 
 #logo-green {
     position: absolute;
-    width: 8px;
+    width: 7px;
     height: 400px;
     background: url(images/logo-green.png) 0 0;
     z-index: 1;
@@ -32,7 +32,7 @@ h1 {
 
 #logo-blue {
     position: absolute;
-    width: 9px;
+    width: 7px;
     height: 400px;
     background: url(images/logo-blue.png) 0 0;
     z-index: 2;
@@ -100,4 +100,14 @@ label {
 
 [for=lng-rest-dur] {
     margin-left: 127px;
+}
+
+input[type=checkbox] {
+    width: 40px;
+    height: 40px;
+    margin: 0 10px 0 10px;
+}
+
+input:disabled {
+    cursor: default !important;
 }
