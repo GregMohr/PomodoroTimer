@@ -24,7 +24,7 @@ h1 {
 
 #logo-green {
     position: absolute;
-    width: 7px;
+    width: 8px;
     height: 400px;
     background: url(images/logo-green.png) 0 0;
     z-index: 1;
@@ -32,7 +32,7 @@ h1 {
 
 #logo-blue {
     position: absolute;
-    width: 7px;
+    width: 9px;
     height: 400px;
     background: url(images/logo-blue.png) 0 0;
     z-index: 2;
@@ -59,10 +59,6 @@ h1 {
     border: none;
     text-align: right;
     margin-top: 305px;
-    /*
-    line-height: 42px;
-    border: 1px solid red;
-    */
 }
 
 #pom-dur {
