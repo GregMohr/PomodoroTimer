@@ -1,5 +1,6 @@
 body {
     background-color: grey;
+    font-family: 'Comfortaa', cursive;
 }
 
 h1 {
@@ -9,31 +10,31 @@ h1 {
 
 .position-frame {
     position: relative;
-    width: 1046px;
-    height: 400px;
+    width: 1027px;
+    height: 358px;
     left: 8px;
 }
 
 #logo-black {
     position: absolute;
-    width: 1046px;
-    height: 400px;
+    width: 1027px;
+    height: 358px;
     background: url(images/logo-black.png) 0 0;
     z-index: 0;
 }
 
 #logo-green {
     position: absolute;
-    width: 7px;
-    height: 400px;
+    width: 0;
+    height: 358px;
     background: url(images/logo-green.png) 0 0;
     z-index: 1;
 }
 
 #logo-blue {
     position: absolute;
-    width: 7px;
-    height: 400px;
+    width: 0;
+    height: 358px;
     background: url(images/logo-blue.png) 0 0;
     z-index: 2;
 }
@@ -46,15 +47,15 @@ h1 {
     width: 100px;
     height: 42px;
     z-index: 3;
-    margin: 180px 0 0 464px;
-    /*
-    border: 1px solid red;
-    margin-top: -220px;
-    */
+    margin: 165px 0 0 458px;
+    font-family: 'Comfortaa', cursive;
+    color: #00AA0E;
+    opacity: .6;
 }
 
 #timer:hover {
     cursor: pointer;
+    opacity: 1;
 }
 
 .duration {
@@ -72,14 +73,17 @@ h1 {
 
 #pom-dur {
     margin-left: 299px;
+    color: #00AA0E;
 }
 
 #sht-rest-dur {
     margin-left: 494px;
+    color: #0000FF;
 }
 
 #lng-rest-dur {
     margin-left: 700px;
+    color: #0000FF;
 }
 
 input:focus {
@@ -92,20 +96,23 @@ label {
 
 [for=pom-dur] {
     margin-left: 275px;
+    color: #00AA0E;
 }
 
 [for=sht-rest-dur] {
-    margin-left: 128px;
+    margin-left: 124px;
+    color: #0000FF;
 }
 
 [for=lng-rest-dur] {
-    margin-left: 127px;
+    margin-left: 122px;
+    color: #0000FF;
 }
 
 input[type=checkbox] {
     width: 40px;
     height: 40px;
-    margin: 0 10px 0 10px;
+    margin: 20px 10px 0 10px;
 }
 
 input:disabled {
