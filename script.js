@@ -41,51 +41,73 @@ var timerRunning = false,
 //new Date(1000 * seconds).toISOString().substr(14, 5);to get mm:ss from seconds
 
 $(document).ready(function() {
-    $("#timer").click(startStop); //first time this happens, change functionality to timer.pause?
+
+    $("#timer").click(startStop);
     $("#pom-dur").on('keyup input change', updateTimeDisplay);
+
 });
+
+function startStop() {
+    //timerRunning = !timerRunning;
+    console.log("timer display clicked");
+    if (!started) {
+        console.log("starting timer");
+        //start (disable duration controls. reset re-enables) or resume??
+        timer = new PomodoroTimer($("#pom-dur").val(), $("#sht-rest-dur").val(), $("#lng-rest-dur").val());
+        $("#reset").click(timer.reset);
+        started = true;
+    } else {
+        //clearInterval(timer);
+    }
+}
 
 function PomodoroTimer(pomDuration, shortDuration, longDuration) {
     this.pomSeconds = pomDuration * 60;
     this.shortSeconds = shortDuration * 60;
     this.longSeconds = longDuration * 60;
-    this.inPomodoro = true;
-    this.timeRemaining = pomDuration;
-    this.rep = 1;
-    this.runWorkBlock = runWorkBlock();
+    console.log("pomSeconds: " + this.pomSeconds);
+    var inPomodoro = true,
+        timeRemaining = this.pomSeconds,
+        rep = 1,
+        tickInterval;
+    console.log("timeRemaining: " + timeRemaining);
+    this.runWorkBlock = runWorkBlock(this);
 
-    function runWorkBlock() {
+    function runWorkBlock(obj) {
+        console.log("starting block");
         while (rep < 5) {
+            console.log("running rep: " + rep);
             if (rep < 4) {
                 if (inPomodoro) {
-                    //pomodoro
                     console.log("running pom");
                     //logoSecond
-                    //setInterval(tick, 1000);
-                    //inPomodoro = false;
-                    //timeRemaining = shortSeconds;
+                    console.log("timeRemaining: " + timeRemaining);
+                    tickInterval = setInterval(tick, 1000);
+                    inPomodoro = false;
+                    timeRemaining = obj.shortSeconds;
+                    console.log("timeRemaining (short): " + timeRemaining);
                 }
                 //short rest
                 console.log("running short rest");
                 //logoSecond
-                //setInterval(tick, 1000);
-                //inPomodoro = true;
-                //timeRemaining = pomDuration;
+                // tickInterval = setInterval(tick, 1000);
+                // inPomodoro = true;
+                // timeRemaining = obj.pomSeconds;
             } else {
                 if (inPomodoro) {
                     //pomodoro
                     console.log("running pom");
                     //logoSecond
-                    //setInterval(tick, 1000);
-                    //inPomodoro = false;
-                    //timeRemaining = longSeconds;
+                    tickInterval = setInterval(tick, 1000);
+                    inPomodoro = false;
+                    timeRemaining = obj.longSeconds;
                 }
                 //long rest
-                console.log("running long rest");
+                //console.log("running long rest");
                 //logoSecond
-                //setInterval(tick, 1000);
-                //inPomodoro = true;
-                //timeRemaining = pomDuration;
+                // tickInterval = setInterval(tick, 1000);
+                // inPomodoro = true;
+                // timeRemaining = obj.pomSeconds;
                 //-------
                 //reset check marks? How do I safely loop the block? an outer while with set executions?
             }
@@ -95,32 +117,32 @@ function PomodoroTimer(pomDuration, shortDuration, longDuration) {
     }
 
     function tick() {
+        //add callback parameter to run once timeRemaining hits 0 that checks state and mobes to the next state and starts it accordingly
+        console.log("tick: " + timeRemaining);
+        if (timeRemaining > 0) {
+            console.log(timeRemaining);
+            timeRemaining--;
+        } else {
+            clearInterval(tickInterval);
+        }
         //add seconds(how many times to execute) and logo pixel count(how many pixels to inc/dec per interval)
         //deduct 1 second from timer display
-        timeRemaining = 0;
-        //add
+    }
+
+    function reset() {
+        clearInterval(tickInterval);
     }
 }
 
-function startStop() {
-    //timerRunning = !timerRunning;
-    if (!started) {
-        //start (disable duration controls. reset re-enables) or resume??
-        timer = new PomodoroTimer($("#pom-dur").val(), $("#sht-rest-dur").val(), $("#lng-rest-dur").val());
-        started = true;
-    } else {
-        //clearInterval(timer);
-    }
-}
 
 function updateTimeDisplay() {
     $("#timer").text($("#pom-dur").val() + ":00");
 }
 
-function reset() {
+/* function reset() {
     //activate duration controls.
     //should this just reset the timer or the duration values too. Maybe two different resets
-    clearInterval(inter);
+    
     //set both active logos to width: 0
     //clear check marks
-}
+} */
