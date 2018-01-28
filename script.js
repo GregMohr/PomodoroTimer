@@ -8,6 +8,9 @@ After four pomodoros, take a longer break (15–30 minutes), reset your checkmar
 user sets durations
 user starts timer
 duration controls are locked
+timer is created with durations set
+runPhase is called
+-phase is initialized and run passing needed arguments to tick, including itself as a callback after timeRem hits 0
 
 A
 pomodoro starts
@@ -55,85 +58,75 @@ function startStop() {
         //start (disable duration controls. reset re-enables) or resume??
         timer = new PomodoroTimer($("#pom-dur").val(), $("#sht-rest-dur").val(), $("#lng-rest-dur").val());
         $("#reset").click(timer.reset);
+        timer.runPhase();
         started = true;
     } else {
         //clearInterval(timer);
     }
 }
 
-function PomodoroTimer(pomDuration, shortDuration, longDuration) {
-    this.pomSeconds = pomDuration * 60;
-    this.shortSeconds = shortDuration * 60;
-    this.longSeconds = longDuration * 60;
-    console.log("pomSeconds: " + this.pomSeconds);
-    var inPomodoro = true,
-        timeRemaining = this.pomSeconds,
-        rep = 1,
-        tickInterval;
-    console.log("timeRemaining: " + timeRemaining);
-    this.runWorkBlock = runWorkBlock(this);
 
-    function runWorkBlock(obj) {
-        console.log("starting block");
-        while (rep < 5) {
-            console.log("running rep: " + rep);
-            if (rep < 4) {
-                if (inPomodoro) {
-                    console.log("running pom");
-                    //logoSecond
-                    console.log("timeRemaining: " + timeRemaining);
-                    tickInterval = setInterval(tick, 1000);
-                    inPomodoro = false;
-                    timeRemaining = obj.shortSeconds;
-                    console.log("timeRemaining (short): " + timeRemaining);
-                }
-                //short rest
-                console.log("running short rest");
-                //logoSecond
-                // tickInterval = setInterval(tick, 1000);
-                // inPomodoro = true;
-                // timeRemaining = obj.pomSeconds;
-            } else {
-                if (inPomodoro) {
-                    //pomodoro
-                    console.log("running pom");
-                    //logoSecond
-                    tickInterval = setInterval(tick, 1000);
-                    inPomodoro = false;
-                    timeRemaining = obj.longSeconds;
-                }
-                //long rest
-                //console.log("running long rest");
-                //logoSecond
-                // tickInterval = setInterval(tick, 1000);
-                // inPomodoro = true;
-                // timeRemaining = obj.pomSeconds;
-                //-------
-                //reset check marks? How do I safely loop the block? an outer while with set executions?
-            }
-            rep++;
+function PomodoroTimer() {
+    var inPomodoro,
+        timeRemaining,
+        rep,
+        tickInterval;
+
+    this.runPhase = runPhase;
+    this.reset = reset;
+
+    function runPhase() {
+        if (!rep) {
+            rep = 1;
+            inPomodoro = true;
         }
-        //reset reps and restart workblock??
+
+        if (rep > 4) {
+            clearInterval(tickInterval);
+            return;
+        }
+
+        if (inPomodoro) {
+            timeRemaining = $("#pom-dur").val() * 60;
+            console.log("Pomodoro time set: " + timeRemaining);
+        } else if (rep < 4) {
+            timeRemaining = $("#sht-rest-dur").val() * 60;
+            console.log("Short Rest time set: " + timeRemaining);
+        } else {
+            timeRemaining = $("#lng-rest-dur").val() * 60;
+            console.log("Long Rest time set: " + timeRemaining);
+        }
+
+        console.log("Running: rep " + rep + " " + (inPomodoro ? "Pomodoro" : "Rest"));
+        console.log("Time Remaining: " + timeRemaining);
+        tickInterval = setInterval(tick, 1000, runPhase);
     }
 
-    function tick() {
-        //add callback parameter to run once timeRemaining hits 0 that checks state and mobes to the next state and starts it accordingly
-        console.log("tick: " + timeRemaining);
+    function tick(callback) {
         if (timeRemaining > 0) {
             console.log(timeRemaining);
+            $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
             timeRemaining--;
         } else {
+            console.log("clearing interval");
+            $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
             clearInterval(tickInterval);
+            if (!inPomodoro) {
+                rep++;
+            } else {
+                $("#chk-" + rep).attr("checked");
+                console.log("checked?");
+            }
+            inPomodoro = !inPomodoro;
+            callback();
         }
-        //add seconds(how many times to execute) and logo pixel count(how many pixels to inc/dec per interval)
-        //deduct 1 second from timer display
     }
 
     function reset() {
         clearInterval(tickInterval);
+        //reset vars
     }
 }
-
 
 function updateTimeDisplay() {
     $("#timer").text($("#pom-dur").val() + ":00");
