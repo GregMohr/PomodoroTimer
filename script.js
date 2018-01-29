@@ -5,6 +5,14 @@ Work on the task.
 End work when the timer rings and a checkmark will be placed in the appropriate repetition box
 After four pomodoros, take a longer break (15–30 minutes), reset your checkmark count to zero, then go to step 1.
 
+x. Add logoTick
+x. Add pause
+x. Add time display change opposite to logo
+x. Add duration controls reset
+x. Add Work Block reset
+x. Fix time display: keep : centered while timer ticking down
+x. Add guide lines for phases
+
 user sets durations
 user starts timer
 duration controls are locked
@@ -41,12 +49,12 @@ var timerRunning = false,
     timer,
     started = false;
 //should I protect against page refresh??
-//new Date(1000 * seconds).toISOString().substr(14, 5);to get mm:ss from seconds
 
 $(document).ready(function() {
 
     $("#timer").click(startStop);
     $("#pom-dur").on('keyup input change', updateTimeDisplay);
+    //create timer here or leave it global. Should allow for both reset to assigned in here
 
 });
 
@@ -56,8 +64,8 @@ function startStop() {
     if (!started) {
         console.log("starting timer");
         //start (disable duration controls. reset re-enables) or resume??
-        timer = new PomodoroTimer($("#pom-dur").val(), $("#sht-rest-dur").val(), $("#lng-rest-dur").val());
-        $("#reset").click(timer.reset);
+        timer = new PomodoroTimer();
+        // $("#reset").click(timer.reset);
         timer.runPhase();
         started = true;
     } else {
@@ -65,11 +73,11 @@ function startStop() {
     }
 }
 
-
 function PomodoroTimer() {
     var inPomodoro,
         timeRemaining,
         rep,
+        logoTick,
         tickInterval;
 
     this.runPhase = runPhase;
@@ -88,6 +96,7 @@ function PomodoroTimer() {
 
         if (inPomodoro) {
             timeRemaining = $("#pom-dur").val() * 60;
+            logoTick = 3;
             console.log("Pomodoro time set: " + timeRemaining);
         } else if (rep < 4) {
             timeRemaining = $("#sht-rest-dur").val() * 60;
@@ -103,33 +112,39 @@ function PomodoroTimer() {
     }
 
     function tick(callback) {
+        //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
+
         if (timeRemaining > 0) {
+            //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
             console.log(timeRemaining);
-            $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
             timeRemaining--;
         } else {
-            console.log("clearing interval");
-            $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
+            //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
             clearInterval(tickInterval);
             if (!inPomodoro) {
                 rep++;
             } else {
-                $("#chk-" + rep).attr("checked");
-                console.log("checked?");
+                $("#chk-" + rep).attr("checked", true);
             }
             inPomodoro = !inPomodoro;
             callback();
         }
+        $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
     }
 
     function reset() {
         clearInterval(tickInterval);
         //reset vars
+        rep = null;
+        inPomodoro = null;
+        timeRemaining = null;
     }
 }
 
 function updateTimeDisplay() {
-    $("#timer").text($("#pom-dur").val() + ":00");
+    let val = $("#pom-dur").val();
+    $("#timer").text(val > 9 ? val + ":00" : "0" + val + ":00");
+    // $("#timer").text($("#pom-dur").val() + ":00");
 }
 
 /* function reset() {
