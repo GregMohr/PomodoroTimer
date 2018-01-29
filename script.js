@@ -8,47 +8,17 @@ After four pomodoros, take a longer break (15–30 minutes), reset your checkmar
 x. Add logoTick
 x. Add pause
 x. Add time display change opposite to logo
-x. Add duration controls reset
-x. Add Work Block reset
+x. Add duration controls reset, unlocks dur controls//may be able to combo the resets to 1 method by sending a callback of thw rest of the functionality. unlock dur controls is part of both
+x. Add Work Block reset, unlocks dur controls
 x. Fix time display: keep : centered while timer ticking down
 x. Add guide lines for phases
+x. Add pom finished sound, min to rest end and rest end tones
 
-user sets durations
-user starts timer
-duration controls are locked
-timer is created with durations set
-runPhase is called
--phase is initialized and run passing needed arguments to tick, including itself as a callback after timeRem hits 0
-
-A
-pomodoro starts
--timer dec
--green logo inc
-pomodoro ends
-place checkmark
-short rest starts
--green logo height: 0, blue logo height: 100%
--timer dec
--blue logo dec
-(repeat A 2x more, then go B)
-
-B
-pomodoro starts
--timer dec
--green logo inc
-pomodoro ends
-place checkmark
-long rest starts
--timer dec
--blue logo inc/dec
-reset checks
-return to A
-
+should I protect against page refresh??
 */
 var timerRunning = false,
     timer,
     started = false;
-//should I protect against page refresh??
 
 $(document).ready(function() {
 
@@ -64,6 +34,7 @@ function startStop() {
     if (!started) {
         console.log("starting timer");
         //start (disable duration controls. reset re-enables) or resume??
+        $(".duration").attr("disabled", true);
         timer = new PomodoroTimer();
         // $("#reset").click(timer.reset);
         timer.runPhase();
@@ -74,19 +45,32 @@ function startStop() {
 }
 
 function PomodoroTimer() {
+    this.runPhase = runPhase;
+    this.reset = reset;
+
     var inPomodoro,
         timeRemaining,
         rep,
+        pomSeconds,
+        shortSeconds,
+        longSeconds,
         logoTick,
-        tickInterval;
-
-    this.runPhase = runPhase;
-    this.reset = reset;
+        tickInterval,
+        logoHeight = $("#logo-black").height(),
+        logoPomTick,
+        logoShortTick,
+        logoLongTick;
 
     function runPhase() {
         if (!rep) {
             rep = 1;
             inPomodoro = true;
+            pomSeconds = $("#pom-dur").val() * 60;
+            shortSeconds = $("#sht-rest-dur").val() * 60;
+            longSeconds = $("#lng-rest-dur").val() * 60;
+            logoPomTick = logoHeight / pomSeconds;
+            logoShortTick = logoHeight / shortSeconds;
+            logoLongTick = logoHeight / longSeconds;
         }
 
         if (rep > 4) {
@@ -95,14 +79,13 @@ function PomodoroTimer() {
         }
 
         if (inPomodoro) {
-            timeRemaining = $("#pom-dur").val() * 60;
-            logoTick = 3;
+            timeRemaining = pomSeconds;
             console.log("Pomodoro time set: " + timeRemaining);
         } else if (rep < 4) {
-            timeRemaining = $("#sht-rest-dur").val() * 60;
+            timeRemaining = shortSeconds;
             console.log("Short Rest time set: " + timeRemaining);
         } else {
-            timeRemaining = $("#lng-rest-dur").val() * 60;
+            timeRemaining = longSeconds;
             console.log("Long Rest time set: " + timeRemaining);
         }
 
@@ -112,29 +95,42 @@ function PomodoroTimer() {
     }
 
     function tick(callback) {
-        //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
-
-        if (timeRemaining > 0) {
-            //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
-            console.log(timeRemaining);
-            timeRemaining--;
+        timeRemaining--;
+        $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
+        if (inPomodoro) {
+            //inc green logo
+            // console.log("height: " + $("#logo-green").height() + " logoPomTick: " + logoPomTick);
+            $("#logo-black").height($("#logo-black").height() - logoPomTick);
         } else {
-            //$("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
+            //dec blue logo
+            if (rep < 4) {
+                $("#logo-blue").height($("#logo-blue").height() + logoShortTick);
+            } else {
+                $("#logo-blue").height($("#logo-blue").height() + logoLongTick);
+            }
+        }
+
+        if (timeRemaining == 0) {
             clearInterval(tickInterval);
             if (!inPomodoro) {
                 rep++;
+                $("#logo-black").height("358px");
+                $("#logo-green").height("358px");
+                $("#logo-blue").height("0");
             } else {
                 $("#chk-" + rep).attr("checked", true);
+
+                //$("#logo-blue").height("358px");
+                //$("#logo-green").height("0");
             }
             inPomodoro = !inPomodoro;
             callback();
         }
-        $("#timer").text(new Date(1000 * timeRemaining).toISOString().substr(14, 5));
     }
 
     function reset() {
         clearInterval(tickInterval);
-        //reset vars
+        //should I just nullify timer rather than the vars?
         rep = null;
         inPomodoro = null;
         timeRemaining = null;
@@ -144,7 +140,6 @@ function PomodoroTimer() {
 function updateTimeDisplay() {
     let val = $("#pom-dur").val();
     $("#timer").text(val > 9 ? val + ":00" : "0" + val + ":00");
-    // $("#timer").text($("#pom-dur").val() + ":00");
 }
 
 /* function reset() {
