@@ -1,5 +1,4 @@
 /*
-x. Straighten logo and be sure each logo is exact same shape/size. seems green is slightly bigger than black
 x. Fade blue logo to black
 x. Fix time display: keep : centered while timer ticking down
 x. blue looks to be not completely covering at end of phase
