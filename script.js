@@ -1,8 +1,7 @@
 /*
-x. Add pom finished sound, min to rest end and rest end tones
-x. Fix time display: keep : centered while timer ticking down
-x. Straighten logo and be sure each color is exact same shape/size
+x. Straighten logo and be sure each logo is exact same shape/size. seems green is slightly bigger than black
 x. Fade blue logo to black
+x. Fix time display: keep : centered while timer ticking down
 x. blue looks to be not completely covering at end of phase
 x. Pomodoro, Work Block and Duration Controls resets
 x. Repeat work block checkmark
@@ -73,6 +72,7 @@ function PomodoroTimer() {
 
     function endPom() {
         console.log("ending Pomodoro");
+        document.getElementById("pom-end").play();
         let chkPhase = phases.shift();
         $("#chk-" + chkPhase.chk).attr("checked", true);
         getPhase();
@@ -80,6 +80,7 @@ function PomodoroTimer() {
 
     function endRest() {
         console.log("ending rest");
+        document.getElementById("rest-end").play();
         $("#logo-black").height("358px");
         $("#logo-green").height("358px");
         $("#logo-blue").height("0"); //can I do something like change the opacity of blue and black in opp so it looks like I'm fading from blue to black?
@@ -101,6 +102,8 @@ function PomodoroTimer() {
         $("#timer").text(new Date(1000 * phase.secondsRemaining).toISOString().substr(14, 5));
         let newHeight = eval($(phase.logoName).height() + phase.logoAction + phase.logoTick);
         $(phase.logoName).height(newHeight);
+
+        if (phase.secondsRemaining == 10 && phase.logoName == "#logo-blue") document.getElementById("rest-warn").play();
 
         if (phase.secondsRemaining == 0) {
             clearInterval(tickInterval);
