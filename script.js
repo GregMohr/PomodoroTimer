@@ -1,17 +1,12 @@
 /*
-x. Add pause
-x. Add time display change opposite to logo
-x. Add duration controls reset, unlocks dur controls//may be able to combo the resets to 1 method by sending a callback of thw rest of the functionality. unlock dur controls is part of both
-x. Add Work Block reset, unlocks dur controls
-x. Fix time display: keep : centered while timer ticking down
-x. Add guide lines for phases
 x. Add pom finished sound, min to rest end and rest end tones
+x. Fix time display: keep : centered while timer ticking down
 x. Straighten logo and be sure each color is exact same shape/size
 x. Fade blue logo to black
-x. Create a queue of phase objects that track phase specifics. Then a pause would just update the front phase's time remaining. Remove each object once expired
-x. only allow numbers within range, even when typed, in durations
-
-should I protect against page refresh??
+x. blue looks to be not completely covering at end of phase
+x. Pomodoro, Work Block and Duration Controls resets
+x. Repeat work block checkmark
+x. protect against page refresh
 */
 $(document).ready(function() {
     logoHeight = $("#logo-black").height();
@@ -23,13 +18,14 @@ $(document).ready(function() {
 function startStop() {
     if (timer.isStarted) {
         if (!timer.isPaused) {
-            console.log("pausing");
+            console.log("pausing timer");
             timer.pause();
         } else {
-            console.log("resuming");
+            console.log("resuming timer");
             timer.resume();
         }
     } else {
+        console.log("timer started");
         $(".duration").attr("disabled", true);
         timer.isStarted = true;
         timer.initPhases();
@@ -57,7 +53,7 @@ function PomodoroTimer() {
     var tickInterval;
     var phases = [];
 
-    function initPhases() { //should this be a static TimerPhase function that returns the phases object?
+    function initPhases() {
         console.log("initPhases");
         var newPhase;
         let chk = 1;
@@ -92,7 +88,8 @@ function PomodoroTimer() {
     }
 
     function getPhase() {
-        if (phases.length == 0) return; // initPhases
+        if (phases.length == 0) return; // initPhases if repeat block checked
+        console.log("getting phase");
         let curPhase = phases[0];
         $("#timer").css("color", curPhase.textColor);
         tickInterval = setInterval(tick, 1000, curPhase);
@@ -100,13 +97,13 @@ function PomodoroTimer() {
 
     function tick(phase) {
         phase.secondsRemaining = phase.secondsRemaining - 1;
+        console.log("remaining: " + phase.secondsRemaining);
         $("#timer").text(new Date(1000 * phase.secondsRemaining).toISOString().substr(14, 5));
         let newHeight = eval($(phase.logoName).height() + phase.logoAction + phase.logoTick);
         $(phase.logoName).height(newHeight);
 
         if (phase.secondsRemaining == 0) {
             clearInterval(tickInterval);
-            console.log("endPhase");
             phase.endPhase();
         }
     }
@@ -123,9 +120,11 @@ function PomodoroTimer() {
 
     function reset() {
         clearInterval(tickInterval);
+        phases = null;
         //should I just nullify timer rather than the vars?
         $("#time").css("color", "black");
-
+        updateTimeDisplay();
+        $(".duration").attr("disabled", false);
     }
 }
 
@@ -133,11 +132,3 @@ function updateTimeDisplay() {
     let val = $("#pom-dur").val();
     $("#timer").text(val > 9 ? val + ":00" : "0" + val + ":00");
 }
-
-/* function reset() {
-    //activate duration controls.
-    //should this just reset the timer or the duration values too. Maybe two different resets
-    
-    //set both active logos to width: 0
-    //clear check marks
-} */
